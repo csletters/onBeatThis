@@ -38,6 +38,8 @@ public class JSONCalls {
 	public final static String ARTIST_KEY = "artist";
 	Thread thread;
 	private JSONCallsListener listener;
+	ArrayList<MusicValues> serahThemeList;
+	ArrayList<MusicValues> songAttemptList;
 	//important, contains API KEY and server location
 	private final String UPLOAD_SERVER_URL = "http://developer.echonest.com/api/v4/track/upload?api_key=Z3IQTFDZ9WFXZAKBD";
 	Play stuff;
@@ -180,20 +182,36 @@ public class JSONCalls {
 					result = "";
 					result = jSONtoString(entity);
 					
+					//saving values of the song attempt into ArrayList
 					JSONObject jobj3 = new JSONObject(result);
 					JSONArray jSegmentArray = jobj3.getJSONArray("segments");
 					String jobj4;
-					if ((jobj4= jSegmentArray.getJSONObject(0)
-							.getString("start")) != null) {
-						receivedAnalysis(jobj4);
-						Log.w("sadsadsad", jobj3.getJSONArray("segments")
-								.getJSONObject(0).getString("start"));
-						Log.d("Fingerprinter",
-								"Results fetched in: "
-										+ (System.currentTimeMillis() - time)
-										+ " millis");
-						Log.d("Fingerprinter", result);
-
+					jobj4 = jSegmentArray.getJSONObject(0).getString("start");
+					Log.w("you", jobj4);
+					songAttemptList = new ArrayList<MusicValues>();
+					for(int x =0; x < jSegmentArray.length(); x++)
+					{
+						
+						jobj4 = jSegmentArray.getJSONObject(x).getString("start");
+						double ids = Double.parseDouble(jobj4);
+						MusicValues segmentValue = new MusicValues(ids); 
+						JSONArray jSegmentPitches= jSegmentArray.getJSONObject(x).getJSONArray("pitches");
+						
+						for(int i = 0; i < jSegmentPitches.length(); i++)
+						{	
+							Double j = jSegmentPitches.getDouble(i);
+							segmentValue.pitches.add(j);
+							//Log.w("parserserah", "" + j);
+							
+						}
+						
+						
+						songAttemptList.add(segmentValue);
+						
+					}
+					for(int i = 0; i<songAttemptList.size(); i++)
+					{
+						Log.w("musicval song attempt", ""+songAttemptList.get(i).start);
 					}
 
 				} catch (Exception e) {
@@ -262,7 +280,7 @@ public class JSONCalls {
 		JSONArray jSegmentArray = jobj.getJSONArray("segments");
 		String  id = jSegmentArray.getJSONObject(0).getString("start");
 		Log.w("you", id);
-		ArrayList<MusicValues> serahThemeList = new ArrayList<MusicValues>();
+		serahThemeList = new ArrayList<MusicValues>();
 		for(int x =0; x < jSegmentArray.length(); x++)
 		{
 			

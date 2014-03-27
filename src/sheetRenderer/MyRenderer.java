@@ -53,7 +53,7 @@ public class MyRenderer implements Renderer {
 	int maxScroll = 0;
 	int scrollPosition = 0;
 	boolean isPlaying = false;
-	
+	int fps = 0;
 	Square object;
 	ShaderHandles squareObjectRenderer;
 	
@@ -91,14 +91,16 @@ public class MyRenderer implements Renderer {
 		GLES20.glViewport(0, 0, width, height);
 		ratio = (float)width/height;
 		Matrix.perspectiveM(projection, 0, 90.0f, ratio, 0.1f, 600f);
-		Matrix.setLookAtM(view, 0, 0.0f, 0.0f, 10, 0, 0.0f, 0, 0, 1, 0);
+		Matrix.setLookAtM(view, 0, 0.0f, 0.0f, 12, 0, 0.0f, 0, 0, 1, 0);
 		Matrix.setIdentityM(model, 0);
 		widthView = width;
 		heightView = height;
 		// world cords radius displayed per screen
 		widthCordsRadiusPerScreen = (float) (ratio * Math.tanh(45) * 10);
 		cordsPerSec = (widthCordsRadiusPerScreen*2)/15.0;
-		intervalDistance = cordsPerSec/10.0;
+		Log.w("cords", Double.toString(cordsPerSec));
+		Log.w("width",Float.toString(widthCordsRadiusPerScreen));
+		intervalDistance = cordsPerSec/60.0;
 		translation = 0.0f;
 		ytranslation = 3.5f;
 	}
@@ -155,15 +157,16 @@ public class MyRenderer implements Renderer {
 		float diff = ((System.nanoTime() - startTime) / 1000000000.0f);
 		startTime = System.nanoTime();
 		elapsedTime += diff;
-		if (elapsedTime > 0.1) {
-			elapsedTime = 0;
-			translation += intervalDistance;
-			if(translation >widthCordsRadiusPerScreen*2)
+		if (elapsedTime > 0.01666) {
+			int multi = (int) (elapsedTime/(0.01666));
+			elapsedTime -= 0.01666*multi;
+			translation += intervalDistance*multi;
+			if(translation >=(widthCordsRadiusPerScreen*2))
 			{
 				translation =0.0f;
 				ytranslation -= 3.5;
 				if(ytranslation < 0)
-					intervalDistance = (widthCordsRadiusPerScreen*2)/100.0;
+					intervalDistance = (widthCordsRadiusPerScreen*2)/600.0;
 				if(ytranslation < -3.5)
 					isPlaying = false;
 			}
@@ -176,7 +179,7 @@ public class MyRenderer implements Renderer {
 		this.isPlaying = isPlaying;
 		translation =0.0f;
 		ytranslation = 3.5f;
-		intervalDistance = (widthCordsRadiusPerScreen*2)/150.0;
+		intervalDistance = (widthCordsRadiusPerScreen*2)/(15.0*60.0);
 	}
 	
 }
