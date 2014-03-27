@@ -14,7 +14,7 @@ import android.widget.TextView;
 public class MyGLSurfaceView extends GLSurfaceView {
 	
 	
-	MyRenderer renderer;
+	public MyRenderer renderer;
 	private GestureDetector mGestureDetector;
 	
     public MyGLSurfaceView(Context context){
@@ -28,6 +28,8 @@ public class MyGLSurfaceView extends GLSurfaceView {
         mGestureDetector = new GestureDetector(context, new GestureListener());
 
     }
+    public void stuff()
+    {}
     
     private class GestureListener extends  GestureDetector.SimpleOnGestureListener
    	{
@@ -78,8 +80,6 @@ public class MyGLSurfaceView extends GLSurfaceView {
        	{
        		float displacementX =(float)  (e1.getX() - e2.getX())*1.5f;
        		float displacementY = (float) (e2.getY() - e1.getY())*1.5f;
-
-       		renderer.movePlayer(displacementX,displacementY);
    			return true;
        		
        	}

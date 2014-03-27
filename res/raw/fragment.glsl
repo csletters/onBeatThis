@@ -1,7 +1,7 @@
 precision mediump float;
 uniform sampler2D uTexture;
 varying vec2 vTexCord;
-uniform float fading;
+
 void main() {
 
 	/*vec3 lightPos = vec3(0.0,2.0,2.0);
@@ -18,5 +18,5 @@ void main() {
 	vec3 phongshading = diffuse +specular+ ambient;*/
 	
 	vec2 flipped_texcoord = vec2(vTexCord.x, 1.0 - vTexCord.y);
-	gl_FragColor = texture2D(uTexture, flipped_texcoord)- fading;
+	gl_FragColor = texture2D(uTexture, flipped_texcoord);
 }

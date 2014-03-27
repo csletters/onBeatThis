@@ -9,6 +9,7 @@ import org.json.JSONException;
 
 import com.example.onbeatthis.R;
 
+
 import shapes.Square;
 
 import loaders.RawResourceReader;
@@ -42,9 +43,17 @@ public class MyRenderer implements Renderer {
 	float ratio;
 	int[] previewTexture;
 	int[] defaultTexture,lineTexture;
-
+	float widthCordsRadiusPerScreen,heightCordsRadiusPerScreen;
+	float ytranslation;
+	double cordsPerSec;
+	double intervalDistance;
+	float startTime = 0;
+	float elapsedTime = 0.0f;
+	float translation =0.0f;
 	int maxScroll = 0;
 	int scrollPosition = 0;
+	boolean isPlaying = false;
+	
 	Square object;
 	ShaderHandles squareObjectRenderer;
 	
@@ -54,35 +63,44 @@ public class MyRenderer implements Renderer {
 	}
 	@Override
 	public void onDrawFrame(GL10 gl) {
-		GLES20.glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
+		timer();
 		GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
+		
 		GLES20.glUseProgram(squareObjectRenderer.programHandle);
-		Matrix.scaleM(model, 0, 12.0f, 10.0f, 1.0f);
+		Matrix.scaleM(model, 0,widthCordsRadiusPerScreen*2, widthCordsRadiusPerScreen*1.5f, 1.0f);
+		Matrix.translateM(model, 0, -0.5f, -0.5f, 0.0f);
 		GLES20.glEnable(GLES20.GL_BLEND);
 		object.draw(projection, view, model, squareObjectRenderer, defaultTexture[0]);
 		GLES20.glDisable(GLES20.GL_BLEND);
 		Matrix.setIdentityM(model, 0);
 		
-		//
-		GLES20.glEnable(GLES20.GL_BLEND);
-		Matrix.translateM(model, 0, -3.6f, 0f, 0.1f);
-		Matrix.rotateM(model, 0, 90, 0, 0, 1);
-		Matrix.scaleM(model, 0, 3.0f, 4.0f, 1.0f);
-		object.draw(projection, view, model, squareObjectRenderer, lineTexture[0]);
-		GLES20.glDisable(GLES20.GL_BLEND);
-		Matrix.setIdentityM(model, 0);
+		if(isPlaying)
+		{
+			Matrix.translateM(model, 0, -widthCordsRadiusPerScreen+translation, ytranslation, 1.0f);
+			Matrix.scaleM(model, 0, 0.05f, 3.5f, 1.0f);
+			Matrix.rotateM(model, 0, 90, 0, 0, 1);
+			Matrix.translateM(model, 0, -0.5f, -0.5f, 0.0f);
+			object.draw(projection, view, model, squareObjectRenderer, lineTexture[0]);
+			Matrix.setIdentityM(model, 0);
+		}
+		
 	}
 
 	@Override
 	public void onSurfaceChanged(GL10 gl, int width, int height) {
 		GLES20.glViewport(0, 0, width, height);
 		ratio = (float)width/height;
-		Matrix.perspectiveM(projection, 0, 60f, ratio, 0.1f, 600f);
+		Matrix.perspectiveM(projection, 0, 90.0f, ratio, 0.1f, 600f);
 		Matrix.setLookAtM(view, 0, 0.0f, 0.0f, 10, 0, 0.0f, 0, 0, 1, 0);
 		Matrix.setIdentityM(model, 0);
 		widthView = width;
 		heightView = height;
-		
+		// world cords radius displayed per screen
+		widthCordsRadiusPerScreen = (float) (ratio * Math.tanh(45) * 10);
+		cordsPerSec = (widthCordsRadiusPerScreen*2)/15.0;
+		intervalDistance = cordsPerSec/10.0;
+		translation = 0.0f;
+		ytranslation = 3.5f;
 	}
 
 	@Override
@@ -101,7 +119,7 @@ public class MyRenderer implements Renderer {
 		initBasicHandles(squareObjectRenderer);
 		
 		defaultTexture = TextureHelper.loadTexture(mActivityContext, R.drawable.sheetmusic);
-		lineTexture = TextureHelper.loadTexture(mActivityContext, R.drawable.line);
+		lineTexture = TextureHelper.loadTexture(mActivityContext, R.drawable.linecolor);
 		
 		object = new Square();
 	}
@@ -132,9 +150,33 @@ public class MyRenderer implements Renderer {
 		shader.projectionHandle = GLES20.glGetUniformLocation(shader.programHandle,	"projection");
 		shader.mTextureUniformHandle.add(GLES20.glGetUniformLocation(shader.programHandle, "uTexture"));
 	}
-	public void movePlayer(float displacementX, float displacementY) {
-		
-		
+
+	public void timer() {
+		float diff = ((System.nanoTime() - startTime) / 1000000000.0f);
+		startTime = System.nanoTime();
+		elapsedTime += diff;
+		if (elapsedTime > 0.1) {
+			elapsedTime = 0;
+			translation += intervalDistance;
+			if(translation >widthCordsRadiusPerScreen*2)
+			{
+				translation =0.0f;
+				ytranslation -= 3.5;
+				if(ytranslation < 0)
+					intervalDistance = (widthCordsRadiusPerScreen*2)/100.0;
+				if(ytranslation < -3.5)
+					isPlaying = false;
+			}
+			
+		}
+
+	}
+	public void playing(boolean isPlaying)
+	{
+		this.isPlaying = isPlaying;
+		translation =0.0f;
+		ytranslation = 3.5f;
+		intervalDistance = (widthCordsRadiusPerScreen*2)/150.0;
 	}
 	
 }

@@ -31,11 +31,12 @@ public final class R {
         public static final int container=0x7f020002;
         public static final int ic_launcher=0x7f020003;
         public static final int line=0x7f020004;
-        public static final int note=0x7f020005;
-        public static final int notes=0x7f020006;
-        public static final int questionmark=0x7f020007;
-        public static final int roundwhite=0x7f020008;
-        public static final int sheetmusic=0x7f020009;
+        public static final int linecolor=0x7f020005;
+        public static final int note=0x7f020006;
+        public static final int notes=0x7f020007;
+        public static final int questionmark=0x7f020008;
+        public static final int roundwhite=0x7f020009;
+        public static final int sheetmusic=0x7f02000a;
     }
     public static final class id {
         public static final int StartButton=0x7f0a0014;

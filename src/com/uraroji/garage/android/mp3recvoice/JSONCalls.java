@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Hashtable;
 
 import org.apache.http.HttpEntity;
@@ -74,7 +75,7 @@ public class JSONCalls {
 		thread = new Thread();
 		stuff = mainActivity;
 		try {
-			parseShit();
+			parseInitial();
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -247,9 +248,12 @@ public class JSONCalls {
 		return sb.toString();
 	}
 	
-
+	public void parseSongAttempt()
+	{
+		
+	}
 	
-	public void parseShit() throws JSONException
+	public void parseInitial() throws JSONException
 	{
 		InputStream is = stuff.getResources().openRawResource(R.raw.serahthemefull);
 		String result = "";
@@ -257,14 +261,36 @@ public class JSONCalls {
 		JSONObject jobj = new JSONObject(result);
 		JSONArray jSegmentArray = jobj.getJSONArray("segments");
 		String  id = jSegmentArray.getJSONObject(0).getString("start");
-
+		Log.w("you", id);
+		ArrayList<MusicValues> serahThemeList = new ArrayList<MusicValues>();
 		for(int x =0; x < jSegmentArray.length(); x++)
 		{
-
+			
+			id = jSegmentArray.getJSONObject(x).getString("start");
+			double ids = Double.parseDouble(id);
+			MusicValues segmentValue = new MusicValues(ids); 
+			JSONArray jSegmentPitches= jSegmentArray.getJSONObject(x).getJSONArray("pitches");
+			
+			for(int i = 0; i < jSegmentPitches.length(); i++)
+			{	
+				Double j = jSegmentPitches.getDouble(i);
+				segmentValue.pitches.add(j);
+				//Log.w("parserserah", "" + j);
+				
+			}
+			
+			
+			serahThemeList.add(segmentValue);
+			
+		}
+		for(int i = 0; i<serahThemeList.size(); i++)
+		{
+			Log.w("musicval", ""+serahThemeList.get(i).start);
 		}
 		
-		Log.w("you", id);
+		
 		
 	}
 
 }
+

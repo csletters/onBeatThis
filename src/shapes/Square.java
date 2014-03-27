@@ -110,9 +110,9 @@ public class Square {
 		GLES20.glVertexAttribPointer(Shader.positionHandle, 3, GLES20.GL_FLOAT, false,	0, 0);
 
 		//normals
-		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, normalValues);
+		/*GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, normalValues);
 		GLES20.glEnableVertexAttribArray(Shader.normalHandle);
-		GLES20.glVertexAttribPointer(Shader.normalHandle, 3, GLES20.GL_FLOAT, false,0, 0);
+		GLES20.glVertexAttribPointer(Shader.normalHandle, 3, GLES20.GL_FLOAT, false,0, 0);*/
 		
 		// Bind the texture to this unit.
 		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);

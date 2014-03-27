@@ -106,6 +106,7 @@ public class Play extends Activity implements JSONCallsListener {
 			@Override
 			public void onClick(View v) {
 				mRecMicToMp3.start();
+				((MyGLSurfaceView) bro.mGLView).renderer.playing(true);
 			}
 		});
 		Button stopButton = (Button) findViewById(R.id.StopButton);
@@ -113,6 +114,7 @@ public class Play extends Activity implements JSONCallsListener {
 			@Override
 			public void onClick(View v) {
 				mRecMicToMp3.stop();
+				((MyGLSurfaceView) bro.mGLView).renderer.playing(false);
 				JSONCalls jcall = new JSONCalls(bro,Play.this);
 				jcall.start();
 				Toast.makeText(Play.this, "Attempting to send to Analysis Servers",
